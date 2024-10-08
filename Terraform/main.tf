@@ -1,32 +1,13 @@
-resource "aws_vpc" "my_vpc" {
-  cidr_block = "10.0.0.0/16"
-  
+# Call the VPC module to create VPC, subnets, and default security group
+module "vpc" {
+  source = "./modules/vpc"
+
+  vpc_cidr_block            = "10.0.0.0/16"
+  public_subnet_cidr_block  = "10.0.1.0/24"
+  private_subnet_cidr_block = "10.0.2.0/24"
+
   tags = {
     Name = "my-vpc"
-  }
-}
-resource "aws_subnet" "public" {
-  vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = "10.0.1.0/24"
-  map_public_ip_on_launch = true  # Tự động gán IP public cho các tài nguyên trong Public Subnet
-  
-  tags = {
-    Name = "public-subnet"
-  }
-}
-resource "aws_subnet" "private" {
-  vpc_id     = aws_vpc.my_vpc.id
-  cidr_block = "10.0.2.0/24"
-  
-  tags = {
-    Name = "private-subnet"
-  }
-}
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.my_vpc.id
-  
-  tags = {
-    Name = "my-igw"
   }
 }
 
@@ -34,32 +15,10 @@ resource "aws_internet_gateway" "igw" {
 module "nat_gateway" {
   source = "./modules/nat_gateway"
 
-  public_subnet_id = aws_subnet.public.id
+  public_subnet_id    = module.vpc.public_subnet_id
   
   tags = {
     Name = "my-nat-gateway"
-  }
-}
-
-resource "aws_security_group" "default" {
-  vpc_id = aws_vpc.my_vpc.id
-  
-  ingress {
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "default-sg"
   }
 }
 
@@ -67,11 +26,11 @@ resource "aws_security_group" "default" {
 module "route_table" {
   source = "./modules/route_table"
 
-  vpc_id              = aws_vpc.my_vpc.id
-  public_subnet_id    = aws_subnet.public.id
-  private_subnet_id   = aws_subnet.private.id
-  internet_gateway_id = aws_internet_gateway.igw.id
-  nat_gateway_id      = aws_nat_gateway.nat.id
+  vpc_id              = module.vpc.vpc_id
+  public_subnet_id    = module.vpc.public_subnet_id
+  private_subnet_id   = module.vpc.private_subnet_id
+  internet_gateway_id = module.vpc.internet_gateway_id
+  nat_gateway_id      = module.nat_gateway.nat_gateway_id
 
   tags = {
     Name = "my-route-table"
