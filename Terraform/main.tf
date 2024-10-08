@@ -29,18 +29,18 @@ resource "aws_internet_gateway" "igw" {
     Name = "my-igw"
   }
 }
-resource "aws_eip" "nat_eip" {
-  vpc = true
-}
 
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat_eip.id
-  subnet_id     = aws_subnet.public.id
+# Use the NAT Gateway module
+module "nat_gateway" {
+  source = "./modules/nat_gateway"
+
+  public_subnet_id = aws_subnet.public.id
   
   tags = {
     Name = "my-nat-gateway"
   }
 }
+
 resource "aws_security_group" "default" {
   vpc_id = aws_vpc.my_vpc.id
   
