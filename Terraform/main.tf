@@ -1,4 +1,4 @@
-# Call the VPC module to create VPC, subnets, and default security group
+# Module VPC
 module "vpc" {
   source = "./modules/vpc"
 
@@ -11,18 +11,18 @@ module "vpc" {
   }
 }
 
-# Use the NAT Gateway module
+# Module NAT Gateway
 module "nat_gateway" {
   source = "./modules/nat_gateway"
 
-  public_subnet_id    = module.vpc.public_subnet_id
-  
+  public_subnet_id = module.vpc.public_subnet_id
+
   tags = {
     Name = "my-nat-gateway"
   }
 }
 
-#import the route_modules
+# Module Route Table
 module "route_table" {
   source = "./modules/route_table"
 
@@ -35,4 +35,36 @@ module "route_table" {
   tags = {
     Name = "my-route-table"
   }
+}
+
+# Module EC2
+module "ec2" {
+  source = "./modules/ec2"
+
+  public_instance_type  = "t2.micro"  # Loại EC2 instance cho Public Instance
+  private_instance_type = "t2.micro"  # Loại EC2 instance cho Private Instance
+  public_subnet_id      = module.vpc.public_subnet_id  # Lấy từ VPC module
+  private_subnet_id     = module.vpc.private_subnet_id  # Lấy từ VPC module
+  vpc_id                = module.vpc.vpc_id  # Lấy từ VPC module
+
+  tags = {
+    Name = "EC2 Instances"
+  }
+}
+
+# Xuất các output từ module EC2
+output "public_instance_id" {
+  value = module.ec2.public_instance_id
+}
+
+output "private_instance_id" {
+  value = module.ec2.private_instance_id
+}
+
+output "public_instance_public_ip" {
+  value = module.ec2.public_instance_public_ip
+}
+
+output "private_instance_private_ip" {
+  value = module.ec2.private_instance_private_ip
 }
