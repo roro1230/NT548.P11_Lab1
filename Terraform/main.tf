@@ -36,22 +36,34 @@ module "route_table" {
     Name = "my-route-table"
   }
 }
-
-# Module EC2
-module "ec2" {
-  source = "./modules/ec2"
-
-  public_instance_type  = "t2.micro"  # Loại EC2 instance cho Public Instance
-  private_instance_type = "t2.micro"  # Loại EC2 instance cho Private Instance
-  public_subnet_id      = module.vpc.public_subnet_id  # Lấy từ VPC module
-  private_subnet_id     = module.vpc.private_subnet_id  # Lấy từ VPC module
-  vpc_id                = module.vpc.vpc_id  # Lấy từ VPC module
-
-  tags = {
-    Name = "EC2 Instances"
+# Gọi module Security Groups
+module "security_groups" {
+  source  = "./modules/security_groups"
+  vpc_id  = module.vpc.vpc_id  # Nhận giá trị từ module VPC
+  tags    = {
+    Name = "MySecurityGroups"
   }
+  allowed_ssh_ip = "113.161.91.9/32" # Thay thế bằng IP cụ thể
 }
 
+# Gọi module EC2
+module "ec2" {
+  source            = "./modules/ec2"
+  vpc_id            = module.vpc.vpc_id
+  public_subnet_id  = module.vpc.public_subnet_id
+  private_subnet_id = module.vpc.private_subnet_id
+
+  # Truyền Security Group IDs từ module Security Groups
+  public_sg_id      = module.security_groups.public_sg_id
+  private_sg_id     = module.security_groups.private_sg_id
+
+  public_instance_type  = "t2.micro"
+  private_instance_type = "t2.micro"
+
+  tags = {
+    Name = "MyEC2Instances"
+  }
+}
 # Xuất các output từ module EC2
 output "public_instance_id" {
   value = module.ec2.public_instance_id
