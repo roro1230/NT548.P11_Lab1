@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "us-east-1"  # Ensure this is the region where 'key-15' was created
+}
+
 # Module VPC
 module "vpc" {
   source = "./modules/vpc"
@@ -43,7 +47,7 @@ module "security_groups" {
   tags    = {
     Name = "MySecurityGroups"
   }
-  allowed_ssh_ip = "113.161.91.9/32" # Thay thế bằng IP cụ thể
+  allowed_ssh_ip = "14.169.1.248/32" # Thay thế bằng IP cụ thể
 }
 
 # Gọi module EC2
@@ -59,6 +63,8 @@ module "ec2" {
 
   public_instance_type  = "t2.micro"
   private_instance_type = "t2.micro"
+
+  key_name = "key-15"
 
   tags = {
     Name = "MyEC2Instances"

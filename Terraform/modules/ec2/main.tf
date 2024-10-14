@@ -27,6 +27,8 @@ resource "aws_instance" "public_instance" {
   # Gán Public IP để có thể truy cập từ Internet
   associate_public_ip_address = true
 
+  key_name = var.key_name  # This is the name of the key pair
+
   tags = var.tags
 }
 
@@ -41,6 +43,8 @@ resource "aws_instance" "private_instance" {
 
   # Không có Public IP, chỉ truy cập từ Public instance
   associate_public_ip_address = false
+
+  key_name = var.key_name
 
   tags = var.tags
 }
