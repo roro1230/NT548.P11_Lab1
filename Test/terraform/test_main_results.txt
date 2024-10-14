@@ -1,0 +1,6 @@
+=== RUN   TestTerraformInfrastructure
+=== PAUSE TestTerraformInfrastructure
+=== CONT  TestTerraformInfrastructure
+--- FAIL: TestTerraformInfrastructure (303.84s)
+FAIL
+FAIL	terratest-15	303.911s
