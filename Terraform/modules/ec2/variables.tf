@@ -37,3 +37,7 @@ variable "tags" {
   description = "Tags for resources"
   type        = map(string)
 }
+variable "key_pair_name" {
+  description = "Tên của SSH key pair để truy cập EC2 instance"
+  type        = string
+}

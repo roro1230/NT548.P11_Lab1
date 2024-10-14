@@ -1,4 +1,4 @@
-# Tự động tìm AMI Amazon Linux 2 từ AWS
+# Tự động tìm AMI Amazon Linux 2 mới nhất
 data "aws_ami" "amazon_linux" {
   most_recent = true
 
@@ -27,6 +27,9 @@ resource "aws_instance" "public_instance" {
   # Gán Public IP để có thể truy cập từ Internet
   associate_public_ip_address = true
 
+  # Tham chiếu SSH key pair ở đây
+  key_name = var.key_pair_name  # Thêm dòng này
+
   tags = var.tags
 }
 
@@ -41,6 +44,9 @@ resource "aws_instance" "private_instance" {
 
   # Không có Public IP, chỉ truy cập từ Public instance
   associate_public_ip_address = false
+
+  # Tham chiếu SSH key pair ở đây
+  key_name = var.key_pair_name  # Thêm dòng này
 
   tags = var.tags
 }
