@@ -12,6 +12,9 @@ Parameters:
     Type: String
   UniqueName:
     Type: String
+  NATGatewayId:
+    Type: String
+    Description: "ID of the NAT Gateway"
 
 Resources:
   # Public Route Table
@@ -35,7 +38,12 @@ Resources:
     Properties:
       SubnetId: !Ref PublicSubnetID  # Tham chiếu đúng tham số PublicSubnetID
       RouteTableId: !Ref PublicRouteTable
-
+  PrivateRoute:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"  # Tất cả lưu lượng ra ngoài
+      NatGatewayId: !Ref NATGatewayId
   # Private Route Table
   PrivateRouteTable:
     Type: "AWS::EC2::RouteTable"

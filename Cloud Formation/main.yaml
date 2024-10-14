@@ -46,12 +46,14 @@ Resources:
     Properties:
       TemplateURL: "https://my-bucket-nt548-group15.s3.amazonaws.com/route_table.yaml"
       Parameters:
-        InternetGatewayId: !GetAtt VPCStack.Outputs.InternetGatewayId   # Tham chiếu đến output đúng
-        VpcId: !GetAtt VPCStack.Outputs.VPCID  # Tham chiếu đến output đúng
-        PublicSubnetID: !GetAtt VPCStack.Outputs.PublicSubnetID  # Tham chiếu đến output đúng
-        PrivateSubnetID: !GetAtt VPCStack.Outputs.PrivateSubnetID  # Tham chiếu đến output đúng
+        InternetGatewayId: !GetAtt VPCStack.Outputs.InternetGatewayId
+        VpcId: !GetAtt VPCStack.Outputs.VPCID
+        PublicSubnetID: !GetAtt VPCStack.Outputs.PublicSubnetID
+        PrivateSubnetID: !GetAtt VPCStack.Outputs.PrivateSubnetID
+        NATGatewayId: !GetAtt NATGatewayStack.Outputs.NatGatewayId
         UniqueName: !Ref UniqueName
-
+    DependsOn: NATGatewayStack  # Đảm bảo NAT Gateway Stack được tạo trước
+    
   # Nested Stack for NAT Gateway
   NATGatewayStack:
     Type: AWS::CloudFormation::Stack
