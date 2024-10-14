@@ -1,0 +1,180 @@
+### Task1 : Make VPC contains Subnets, Internet Gateway, Default Security Group
+AWSTemplateFormatVersion: "2010-09-09"
+Description: " Make VPC contains Subnets, Internet Gateway, Default Security Group"
+
+Parameters:
+  UniqueName:
+    Description: Give a unique name for "Lab1" tag value
+    Type: String
+    Default: Lab1_NT548
+
+  VpcCidr:
+    Type: String
+    Default: 10.192.0.0/16
+    Description: "CIDR notation for VPC"
+
+  PublicSubnetCidr:
+    Type: String
+    Default: 10.192.1.0/24
+    Description: "CIDR for Public Subnet"
+
+  PrivateSubnetCidr:
+    Type: String
+    Default: 10.192.10.0/24
+    Description: "CIDR for Private Subnet"
+
+  AvailabilityZone:
+    Type: String
+    Default: "us-east-1a"
+    Description: "Regions of Subnet"
+
+Resources:
+  # VPC
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Lab1
+          Value: !Ref UniqueName
+
+  # Public Subnet
+  PublicSubnet:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: !Ref PublicSubnetCidr
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Lab1
+          Value: !Ref UniqueName
+
+  # Private Subnet
+  PrivateSubnet:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: !Ref PrivateSubnetCidr
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: !Ref UniqueName
+
+  # Internet Gateway
+  MyInternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+        - Key: Lab1
+          Value: !Ref UniqueName
+
+  AttachGateway:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref MyInternetGateway
+
+  # Public Route Table
+  PublicRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: !Ref UniqueName
+
+  PublicRoute:
+    Type: "AWS::EC2::Route"
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref MyInternetGateway
+
+  PublicSubnetRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # NAT Gateway
+  MyEIP:
+    Type: "AWS::EC2::EIP"
+    DependsOn: AttachGateway
+    Properties:
+      Domain: vpc
+
+  NatGateway:
+    Type: "AWS::EC2::NatGateway"
+    DependsOn: AttachGateway
+    Properties:
+      AllocationId: !GetAtt MyEIP.AllocationId
+      SubnetId: !Ref PublicSubnet
+
+  # Private Route Table
+  PrivateRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: !Ref UniqueName
+
+  PrivateRoute:
+    Type: "AWS::EC2::Route"
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  PrivateSubnetRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
+
+  # Security Group
+  DefaultSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Default security group for VPC"
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: -1
+          CidrIp: !Ref VpcCidr
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: DefaultSecurityGroup
+
+Outputs:
+  VPCID:
+    Description: "VPC ID"
+    Value: !Ref MyVPC
+
+  PublicSubnetID:
+    Description: "Public Subnet ID"
+    Value: !Ref PublicSubnet
+
+  PrivateSubnetID:
+    Description: "Private Subnet ID"
+    Value: !Ref PrivateSubnet
+
+  SecurityGroupID:
+    Description: "Security Group ID"
+    Value: !Ref DefaultSecurityGroup
+
+  PublicRouteTableId:
+    Description: "Public Route Table ID"
+    Value: !Ref PublicRouteTable
+
+  PrivateRouteTableId:
+    Description: "Private Route Table ID"
+    Value: !Ref PrivateRouteTable
