@@ -43,7 +43,7 @@ module "security_groups" {
   tags    = {
     Name = "MySecurityGroups"
   }
-  allowed_ssh_ip = "113.161.91.132/32" # Thay thế bằng IP cụ thể
+  allowed_ssh_ip = "113.185.86.215/32" # Thay thế bằng IP cụ thể
 }
 
 # Gọi module EC2
@@ -59,7 +59,7 @@ module "ec2" {
 
   public_instance_type  = "t2.micro"
   private_instance_type = "t2.micro"
-  key_pair_name           = "testing1"
+  key_pair_name           = "Final1"
   tags = {
     Name = "MyEC2Instances"
   }
