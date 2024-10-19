@@ -47,11 +47,7 @@ module "security_groups" {
   tags    = {
     Name = "MySecurityGroups"
   }
-<<<<<<< HEAD
-  allowed_ssh_ip = "14.169.1.248/32" # Thay thế bằng IP cụ thể
-=======
-  allowed_ssh_ip = "113.161.91.132/32" # Thay thế bằng IP cụ thể
->>>>>>> 6b472a36cfdc8d67ee66fdab25dd1685e6dab1b1
+  allowed_ssh_ip = "42.118.228.109/32" # Thay thế bằng IP cụ thể
 }
 
 # Gọi module EC2
@@ -67,13 +63,9 @@ module "ec2" {
 
   public_instance_type  = "t2.micro"
   private_instance_type = "t2.micro"
-<<<<<<< HEAD
 
   key_name = "key-15"
 
-=======
-  key_pair_name           = "testing1"
->>>>>>> 6b472a36cfdc8d67ee66fdab25dd1685e6dab1b1
   tags = {
     Name = "MyEC2Instances"
   }
