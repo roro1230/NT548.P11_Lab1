@@ -21,7 +21,7 @@ func TestTerraformInfrastructure(t *testing.T) {
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"allowed_ssh_ip": "14.169.1.248/32", // Replace with your public IP
+			"allowed_ssh_ip": "42.118.228.109/32", // Replace with your public IP
 		},
 	}
 
@@ -32,9 +32,17 @@ func TestTerraformInfrastructure(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 
 	// Fetch outputs from the Terraform configuration
+	vpcID := terraform.Output(t, terraformOptions, "vpc_id")
 	publicInstanceID := terraform.Output(t, terraformOptions, "public_instance_id")
 	privateInstanceID := terraform.Output(t, terraformOptions, "private_instance_id")
 	publicInstanceIP := terraform.Output(t, terraformOptions, "public_instance_public_ip")
+
+
+	// Log Module ID with instance and VPC information
+	t.Logf("SUCCESS - VPC ID: %s", vpcID)
+	t.Logf("SUCCESS - Public Instance ID: %s", publicInstanceID)
+	t.Logf("SUCCESS - Private Instance ID: %s", privateInstanceID)
+	t.Logf("SUCCESS - Public Instance IP: %s", publicInstanceIP)
 
 	// Test that EC2 instances were created successfully
 	assert.NotEmpty(t, publicInstanceID, "Public EC2 instance ID should not be empty")
@@ -47,8 +55,9 @@ func TestTerraformInfrastructure(t *testing.T) {
 	privateKeyPath := "key-15.pem" // Replace this with the actual path to your .pem file
 	privateKey, err := os.ReadFile(privateKeyPath)
 	if err != nil {
-        t.Fatalf("Failed to load private key: %v", err)
+        t.Fatalf("ERROR - Failed to load private key: %v", err)
     }
+	t.Logf("SUCCESS - Load private key successful")
 
 	// Create SSH KeyPair struct
     keyPair := &ssh.KeyPair{
@@ -68,6 +77,7 @@ func TestTerraformInfrastructure(t *testing.T) {
 		if err != nil {
 			return "", err
 		}
+		t.Logf("SUCCESS - SSH Connection Successful")
 		return "SSH Connection Successful", nil
 	})
 }
