@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Security Groups: Create Security Groups to control inbound/outbound traffic of EC2 instances (2 points):
+  - Public EC2 Security Group: Only allow SSH connections (port 22) from a specific IP (or user IP).
+  - Private EC2 Security Group: Allow connections from Public EC2 instance via the required port (SSH or other ports if needed).
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: ID of VPC
+
+  AllowedSSHIP:
+    Type: String
+    Description: CIDR block for SSH access to Public EC2 Instance.
+    Default: "113.185.86.215/32"  # Cập nhật địa chỉ IP hiện tại của bạn
+
+Resources:
+  # Security Group cho Public EC2 Instance
+  PublicSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for Public EC2 Instance (allow SSH from specific IP)
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref AllowedSSHIP  # Chỉ cho phép kết nối từ IP cụ thể qua SSH (port 22)
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0  # Cho phép tất cả lưu lượng outbound đi ra ngoài (có thể điều chỉnh nếu cần)
+      Tags:
+        - Key: Name
+          Value: PublicEC2SecurityGroup
+
+  # Security Group cho Private EC2 Instance
+  PrivateSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for Private EC2 Instance (allow SSH from Public EC2 Instance)
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref PublicSecurityGroup  # Chỉ cho phép kết nối từ Public EC2 instance qua SSH
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0  # Cho phép tất cả lưu lượng outbound ra ngoài (có thể điều chỉnh nếu cần)
+      Tags:
+        - Key: Name
+          Value: PrivateEC2SecurityGroup
+
+Outputs:
+  PublicSecurityGroupId:
+    Description: ID of the Security Group for Public EC2 Instance
+    Value: !Ref PublicSecurityGroup
+
+  PrivateSecurityGroupId:
+    Description: ID of the Security Group for Private EC2 Instance
+    Value: !Ref PrivateSecurityGroup
