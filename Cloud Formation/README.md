@@ -11,7 +11,7 @@ Here is the guide of lauching EC2 instances in Cloud Formation projects. The ste
 
 ---
 
-## Guidance of launch EC2 instance
+## A - Guidance of launch EC2 instance
 
 
 ### 1. Create a S3 Bucket.
@@ -86,7 +86,7 @@ aws cloudformation delete-stack --stack-name <your-stack-name>
 
 ## B - Guidance of Testing by Taskcat file
 
-1. Install taskcat package ***(if not installed yet)***
+1. Install taskcat package through pip ***(if not installed yet)***
 ```bash
 pip install taskcat 
 ```
