@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Deploy EC2 Instances in Public and Private Subnets with appropriate Security Groups.
+
+Parameters:
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    AllowedValues:
+      - t2.nano
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+    Default: t2.micro
+    ConstraintDescription: must be a valid EC2 instance type.
+  
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  
+  LatestAmiId:
+    Type: String
+    Default: "ami-089f365c7b6a04f00"
+  
+  PublicSubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: ID of the existing Public Subnet associated with public route table
+
+  PrivateSubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: ID of the existing Private Subnet associated with private route table
+
+  PublicSecurityGroupId:
+    Description: ID of the Security Group for Public EC2 Instance
+    Type: AWS::EC2::SecurityGroup::Id
+
+  PrivateSecurityGroupId:
+    Description: ID of the Security Group for Private EC2 Instance
+    Type: AWS::EC2::SecurityGroup::Id
+
+Resources:
+  # Public EC2 Instance
+  PublicEC2Instance:
+    Type: AWS::EC2::Instance
+    Metadata: 
+      guard:
+        SuppressedRules:
+          - INCOMING_SSH_DISABLED
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      ImageId: !Ref LatestAmiId
+      SecurityGroupIds:
+        - !Ref PublicSecurityGroupId
+      SubnetId: !Ref PublicSubnetId
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-PublicInstance"
+
+  # Private EC2 Instance
+  PrivateEC2Instance:
+    Type: AWS::EC2::Instance
+    Metadata:
+      guard:
+        SuppressedRules:
+          - INCOMING_SSH_DISABLED
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      ImageId: !Ref LatestAmiId
+      SecurityGroupIds:
+        - !Ref PrivateSecurityGroupId
+      SubnetId: !Ref PrivateSubnetId
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-PrivateInstance"
+
+Outputs:
+  PublicEC2InstanceId:
+    Description: ID of Public EC2 Instances
+    Value: !Ref PublicEC2Instance
+  
+  PrivateEC2InstanceId:
+    Description: ID of Private EC2 Instances
+    Value: !Ref PrivateEC2Instance

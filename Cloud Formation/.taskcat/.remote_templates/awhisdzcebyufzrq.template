@@ -4,7 +4,7 @@ Description: "Route Table for Public and Private Subnets"
 Parameters:
   InternetGatewayId:
     Type: String
-  VpcId:  # Sử dụng đúng tên tham số VpcId thay vì VPCID
+  VpcId:  # S? d?ng ??ng t?n tham s? VpcId thay v? VPCID
     Type: String
   PublicSubnetID:
     Type: String
@@ -21,7 +21,7 @@ Resources:
   PublicRouteTable:
     Type: "AWS::EC2::RouteTable"
     Properties:
-      VpcId: !Ref VpcId  # Tham chiếu đúng tham số VpcId
+      VpcId: !Ref VpcId  # Tham chi?u ??ng tham s? VpcId
       Tags:
         - Key: Name
           Value: !Ref UniqueName
@@ -36,19 +36,19 @@ Resources:
   PublicSubnetRouteTableAssociation:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
     Properties:
-      SubnetId: !Ref PublicSubnetID  # Tham chiếu đúng tham số PublicSubnetID
+      SubnetId: !Ref PublicSubnetID  # Tham chi?u ??ng tham s? PublicSubnetID
       RouteTableId: !Ref PublicRouteTable
   PrivateRoute:
     Type: "AWS::EC2::Route"
     Properties:
       RouteTableId: !Ref PrivateRouteTable
-      DestinationCidrBlock: "0.0.0.0/0"  # Tất cả lưu lượng ra ngoài
+      DestinationCidrBlock: "0.0.0.0/0"  # T?t c? l?u l??ng ra ngo?i
       NatGatewayId: !Ref NATGatewayId
   # Private Route Table
   PrivateRouteTable:
     Type: "AWS::EC2::RouteTable"
     Properties:
-      VpcId: !Ref VpcId  # Tham chiếu đúng tham số VpcId
+      VpcId: !Ref VpcId  # Tham chi?u ??ng tham s? VpcId
       Tags:
         - Key: Name
           Value: !Ref UniqueName
@@ -56,7 +56,7 @@ Resources:
   PrivateSubnetRouteTableAssociation:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
     Properties:
-      SubnetId: !Ref PrivateSubnetID  # Tham chiếu đúng tham số PrivateSubnetID
+      SubnetId: !Ref PrivateSubnetID  # Tham chi?u ??ng tham s? PrivateSubnetID
       RouteTableId: !Ref PrivateRouteTable
 
 Outputs:

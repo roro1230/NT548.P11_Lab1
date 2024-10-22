@@ -12,7 +12,7 @@ Parameters:
   AllowedSSHIP:
     Type: String
     Description: CIDR block for SSH access to Public EC2 Instance.
-    Default: "113.185.86.215/32"  # Cập nhật địa chỉ IP hiện tại của bạn
+    Default: "113.185.86.215/32"  # C?p nh?t ??a ch? IP hi?n t?i c?a b?n
 
 Resources:
   # Security Group cho Public EC2 Instance
@@ -25,12 +25,12 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: !Ref AllowedSSHIP  # Chỉ cho phép kết nối từ IP cụ thể qua SSH (port 22)
+          CidrIp: !Ref AllowedSSHIP  # Ch? cho ph?p k?t n?i t? IP c? th? qua SSH (port 22)
       SecurityGroupEgress:
         - IpProtocol: -1
           FromPort: -1
           ToPort: -1
-          CidrIp: 0.0.0.0/0  # Cho phép tất cả lưu lượng outbound đi ra ngoài (có thể điều chỉnh nếu cần)
+          CidrIp: 0.0.0.0/0  # Cho ph?p t?t c? l?u l??ng outbound ?i ra ngo?i (c? th? ?i?u ch?nh n?u c?n)
       Tags:
         - Key: Name
           Value: PublicEC2SecurityGroup
@@ -45,12 +45,12 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          SourceSecurityGroupId: !Ref PublicSecurityGroup  # Chỉ cho phép kết nối từ Public EC2 instance qua SSH
+          SourceSecurityGroupId: !Ref PublicSecurityGroup  # Ch? cho ph?p k?t n?i t? Public EC2 instance qua SSH
       SecurityGroupEgress:
         - IpProtocol: -1
           FromPort: -1
           ToPort: -1
-          CidrIp: 0.0.0.0/0  # Cho phép tất cả lưu lượng outbound ra ngoài (có thể điều chỉnh nếu cần)
+          CidrIp: 0.0.0.0/0  # Cho ph?p t?t c? l?u l??ng outbound ra ngo?i (c? th? ?i?u ch?nh n?u c?n)
       Tags:
         - Key: Name
           Value: PrivateEC2SecurityGroup
