@@ -13,6 +13,11 @@ Here is the guide of lauching EC2 instances in Cloud Formation projects. The ste
 
 ## A - Guidance of launch EC2 instance
 
+### First
+Change path into the Cloud Formation directory of this project as follow
+```bash
+cd "./NT548.P11_LAB1/Cloud Formation"
+```
 
 ### 1. Create a S3 Bucket.
 
@@ -21,6 +26,8 @@ aws s3api create-bucket --bucket <s3_bucket_name> --region <your_region>
 ```
 - When prompted, choose region following instructions of AWS [click here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) (by default, choose "eu-east-1" or "eu-east-2").
 
+- Your S3-bucket's name will must satisfy AWS constraints as follow this [link](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). 
+
 ### 2. Generate a Key Pair
 
 Use command `aws ec2 create-key-pair` to create a new RSA key pair that will be used for SSH access to your EC2 instance.
@@ -28,7 +35,6 @@ Use command `aws ec2 create-key-pair` to create a new RSA key pair that will be 
 ```bash
 aws ec2 create-key-pair --key-name <your-key-pair-name>
 ```
-
 
 ### 3. Configure CloudFormation
 This `parameter.json` file include parameters which construct VPC with Private and Public Subnet and EC2 instances with Security Group. 
@@ -66,7 +72,7 @@ Run the following commands to deploy VPC and EC2 instances:
 cfn-lint **/*.yml  
 
 # Upload nested stack to S3 through S3 bucket 
-aws s3 cp .\nested_stack s3://your-bucket-name/ --recursive --exclude "*" --include "*.yml" 
+aws s3 cp .\modules s3://your-bucket-name/ --recursive --exclude "*" --include "*.yml" 
 
 # Deploy the resources to AWS
 aws cloudformation create-stack \
