@@ -87,6 +87,9 @@ aws cloudformation describe-stacks --stack-name <your-stack-name>
 # Destroy Stack after finishing deploy phase
 aws cloudformation delete-stack --stack-name <your-stack-name>
 ```
+### Notes:
+
+- Check and add all necessary policies through AWS services.
 
 ## B - Guidance of Testing by Taskcat file
 
