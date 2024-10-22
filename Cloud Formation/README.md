@@ -24,7 +24,7 @@ cd "./NT548.P11_LAB1/Cloud Formation"
 ```bash
 aws s3api create-bucket --bucket <s3_bucket_name> --region <your_region>
 ```
-- When prompted, choose region following instructions of AWS [click here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) (by default, choose "eu-east-1" or "eu-east-2").
+- When prompted, choose region following instructions of AWS [click here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) (by default, choose "us-east-1" or "us-east-2").
 
 - Your S3-bucket's name will must satisfy AWS constraints as follow this [link](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). 
 
@@ -71,8 +71,8 @@ Run the following commands to deploy VPC and EC2 instances:
 # Check and verify the validity of the stacks
 cfn-lint **/*.yml  
 
-# Upload nested stack to S3 through S3 bucket 
-aws s3 cp .\modules s3://your-bucket-name/ --recursive --exclude "*" --include "*.yml" 
+# Upload modules to S3 through S3 bucket 
+aws s3 cp "./modules" s3://your-bucket-name/ --recursive --exclude "*" --include "*.yml" 
 
 # Deploy the resources to AWS
 aws cloudformation create-stack \
@@ -87,8 +87,6 @@ aws cloudformation describe-stacks --stack-name <your-stack-name>
 # Destroy Stack after finishing deploy phase
 aws cloudformation delete-stack --stack-name <your-stack-name>
 ```
-
----
 
 ## B - Guidance of Testing by Taskcat file
 
